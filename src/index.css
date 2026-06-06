@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+body{
+margin: 0;
+font-family: Inter, sans-serif;
+background: #f5f7fb;
+}
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
+/* Fix select autofill/dropdown background */
+select {
+  background-color: #020617;
+  color: white;
+}
+
+option {
+  background-color: #020617;
+  color: white;
+}
