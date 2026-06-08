@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FaXmark, FaArrowTrendUp, FaArrowTrendDown } from "react-icons/fa6";
 
 import api from "../../services/api";
 
-function AddTransactionModal({ open, onClose }) {
+function AddTransactionModal({ open, onClose, editTransaction = null }) {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -32,7 +32,11 @@ function AddTransactionModal({ open, onClose }) {
     try {
       setLoading(true);
 
-      await api.post("/transactions", formData);
+      if (editTransaction) {
+        await api.put(`/transactions/${editTransaction.id}`, formData);
+      } else {
+        await api.post("/transactions", formData);
+      }
 
       // Reset Form
       setFormData({
@@ -57,6 +61,18 @@ function AddTransactionModal({ open, onClose }) {
     }
   };
 
+  useEffect(() => {
+    if (editTransaction) {
+      setFormData({
+        type: editTransaction.type,
+        amount: editTransaction.amount,
+        description: editTransaction.description || "",
+        payment_method: editTransaction.payment_method,
+        txn_date: editTransaction.txn_date?.split("T")[0] || "",
+      });
+    }
+  }, [editTransaction]);
+
   // ================= CLOSE =================
 
   if (!open) return null;
@@ -68,7 +84,9 @@ function AddTransactionModal({ open, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-black text-white">Add Transaction</h2>
+            <h2 className="text-2xl font-black text-white">
+              {editTransaction ? "Edit Transaction" : "Add Transaction"}
+            </h2>
 
             <p className="text-slate-400 text-sm mt-1">
               Track your finances smarter
@@ -196,7 +214,11 @@ function AddTransactionModal({ open, onClose }) {
             disabled={loading}
             className="w-full h-14 rounded-2xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-bold text-lg shadow-xl hover:opacity-95 active:scale-[0.98] transition disabled:opacity-70"
           >
-            {loading ? "Saving..." : "Add Transaction"}
+            {loading
+              ? "Saving..."
+              : editTransaction
+                ? "Update Transaction"
+                : "Add Transaction"}
           </button>
         </form>
       </div>
